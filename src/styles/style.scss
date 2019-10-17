@@ -1,0 +1,14 @@
+// 网站主色
+$color1:#d8d8d8;
+$color2:#545c64;
+$color3:#3c4752;
+$bgcolor:#ecf0f1;
+
+// 公用类
+@mixin flex($align:center, $justify:center, $wrap:nowrap, $flex-direction:row) {
+  display: flex;
+  align-items: $align;
+  justify-content: $justify;
+  flex-wrap: $wrap;
+  flex-direction: $flex-direction;
+}
