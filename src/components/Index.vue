@@ -11,7 +11,6 @@
         text-color="#fff"
         active-text-color="#ffd04b"
         router
-
       >
         <el-submenu index="1">
           <template slot="title">
