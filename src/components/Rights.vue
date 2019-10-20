@@ -24,8 +24,12 @@
       width="180">
     </el-table-column>
     <el-table-column
-      prop="level"
       label="层级">
+      <template v-slot:default='{ row }'>
+        <el-tag type="info" v-if="row.level === '0'">一级</el-tag>
+        <el-tag type="info" v-if="row.level === '1'" >二级</el-tag>
+        <el-tag type="info" v-if="row.level === '2'" >三级</el-tag>
+      </template>
     </el-table-column>
   </el-table>
   </div>
@@ -45,6 +49,7 @@ export default {
   async created () {
     const { data, meta } = await this.$axios.get('rights/list')
     if (meta.status === 200) {
+      console.log(data)
       this.tableData = data
       // this.$message.success('获取权限列表成功')
     } else {
