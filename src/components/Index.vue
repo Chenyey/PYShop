@@ -5,7 +5,7 @@
         <img src="../assets/logo1.png" alt="" srcset="">
       </div>
       <el-menu
-        default-active=""
+        :default-active="current"
         class="el-menu-vertical-demo"
         background-color="#545c64"
         text-color="#fff"
@@ -13,52 +13,13 @@
         router
         unique-opened
       >
-        <el-submenu index="1">
+        <el-submenu :index="item.path" v-for="item in menuList" :key="item.id">
           <template slot="title">
             <i class="el-icon-location"></i>
-            <span>用户管理</span>
+            <span>{{item.authName}}</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="users"><i class="el-icon-location"></i>用户列表</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="2">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>权限管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="roles"><i class="el-icon-location"></i>角色列表</el-menu-item>
-            <el-menu-item index="rights"><i class="el-icon-location"></i>权限列表</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>商品管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="goods"><i class="el-icon-location"></i>商品列表</el-menu-item>
-            <el-menu-item index="params"><i class="el-icon-location"></i>分类参数</el-menu-item>
-            <el-menu-item index="categories"><i class="el-icon-location"></i>商品分类</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="4">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>订单管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="orders"><i class="el-icon-location"></i>订单列表</el-menu-item>
-          </el-menu-item-group>
-        </el-submenu>
-        <el-submenu index="5">
-          <template slot="title">
-            <i class="el-icon-location"></i>
-            <span>数据统计</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="orders"><i class="el-icon-location"></i>数据报表</el-menu-item>
+            <el-menu-item v-for="nav in item.children" :key="nav.id" :index="nav.path"><i class="el-icon-location"></i>{{nav.authName}}</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -85,8 +46,18 @@ export default {
       menuList: []
     }
   },
-  created () {
-
+  async created () {
+    try {
+      const { data, meta } = await this.$axios.get('menus')
+      console.log(data, meta)
+      if (meta.status === 200) {
+        this.menuList = data
+      } else {
+        this.$message.error(meta.msg)
+      }
+    } catch (e) {
+      this.$message.error(e)
+    }
   },
   methods: {
     exit () {
@@ -102,6 +73,11 @@ export default {
         })
         this.$router.push({ name: 'login' })
       }).catch(() => {})
+    }
+  },
+  computed: {
+    current () {
+      return this.$route.path.slice(1)
     }
   }
 }
