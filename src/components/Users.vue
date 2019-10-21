@@ -46,7 +46,7 @@
             circle
             @click="delOne(scope.row)"
           ></el-button>
-          <el-button type="success" size="mini" plain>
+          <el-button type="success" @click="showRoles(scope.row)" size="mini" plain>
             <i class="el-icon-setting"></i>分配角色
           </el-button>
         </template>
@@ -103,6 +103,28 @@
       </div>
     </el-dialog>
 
+    <!-- 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="showEditrRoles" width="40%">
+      <el-form ref="rolesForm"  :model="rolesForm" label-width="80px">
+        <el-form-item label="用户名">
+          <el-tag type="info">{{rolesForm.username}}</el-tag>
+        </el-form-item>
+        <el-form-item label="角色列表">
+          <el-select v-model="rolesForm.rid" placeholder="请选择">
+            <el-option
+              v-for="item in rolesList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showEditrRoles = false">取 消</el-button>
+        <el-button type="primary" @click="editRoles">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -145,7 +167,14 @@ export default {
           // 正则验证
           { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: ['blur', 'change'] }
         ]
-      }
+      },
+      showEditrRoles: false,
+      rolesForm: {
+        id: '',
+        username: '',
+        rid: ''
+      },
+      rolesList: []
     }
   },
   created () {
@@ -275,6 +304,48 @@ export default {
           // 关闭对话框
           this.editDialog = false
           // 重新渲染列表
+          this.getUserList()
+        } else {
+          this.$message.error(meta.msg)
+        }
+      } catch (e) {
+        this.$message.error(e)
+      }
+    },
+    // 显示分配角色
+    async showRoles (row) {
+      try {
+        this.showEditrRoles = true
+        this.rolesForm.id = row.id
+        this.rolesForm.username = row.username
+        // 根据id获取原有的角色
+        const resUser = await this.$axios.get(`users/${row.id}`)
+        if (resUser.meta.status === 200) {
+          const rid = resUser.data.rid
+          this.rolesForm.rid = rid === -1 ? '' : rid
+        } else {
+          this.$message.error(resUser.meta.msg)
+        }
+        // 显示角色列表
+        const { data, meta } = await this.$axios.get('roles')
+        if (meta.status === 200) {
+          this.rolesList = data
+        } else {
+          this.$message.error(meta.msg)
+        }
+      } catch (e) {
+        this.$message.error(e)
+      }
+    },
+    // 分配角色
+    async editRoles () {
+      try {
+        const { id, rid } = this.rolesForm
+        const { meta } = await this.$axios.put(`users/${id}/role`, { rid })
+        console.log(meta)
+        if (meta.status === 200) {
+          this.$message.success(meta.msg)
+          this.showEditrRoles = false
           this.getUserList()
         } else {
           this.$message.error(meta.msg)
