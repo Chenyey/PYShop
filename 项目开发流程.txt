@@ -1,0 +1,19 @@
+项目开发流程记录
+  1.框架
+    安装npm-cli 脚手架
+    按照需求修改调整框架自带代码
+    配置路由
+    安装依赖
+      element-ui -- 引入，并use
+      axios -- 引入，添加到原型，发送拦截，返回拦截
+  
+  2.登录
+  3.列表
+    使用过滤器优化时间格式
+      定义成全局的比较合适, 在哪都能用
+      注意:  后台传递的参数是 秒级别的, 需要处理下
+  3.添加商品
+    文本域插件  quill-editor    https://github.com/quilljs/quill
+    安装文本域  vue-quill-editor  https://github.com/surmon-china/vue-quill-editor
+    
+    

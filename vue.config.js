@@ -3,8 +3,16 @@
 module.exports = {
   devServer: {
     open: true,
-    port: 8080
+    port: 8080,
+    proxy: {
+      '/yeye': {
+        target: 'http://localhost:8888/api/private/v1/',
+        pathRewrite: { '^/yeye': '' }
+      }
+    }
   },
+
+  // 所有页面默认引入的css
   css: {
     loaderOptions: {
       sass: {
